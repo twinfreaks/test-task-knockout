@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "sourceMap": true
+  },
+  "files": [
+    "./src/require-config.ts",
+    "./src/main.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "built",
+    "view"
+  ]
+}
