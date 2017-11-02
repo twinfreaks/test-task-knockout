@@ -3,67 +3,111 @@
 <head>
   <link rel="stylesheet" href="main.css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 <body>
 
 <div class="container">
-  <p>You have asked for <span data-bind="text: records().length">&nbsp;</span> record(s)</p>
   <table data-bind="visible: records().length > 0" class="table table">
     <thead>
     <tr>
       <th>Name</th>
       <th>Surname</th>
+      <th>Email</th>
       <th>Phone</th>
-      <th/>
+      <th></th>
+      <th></th>
     </tr>
     </thead>
+
     <tbody data-bind="foreach: records">
     <tr>
-      <td><input class="required" data-bind="value: name, uniqueName: true"/></td>
-      <td><input class="required" data-bind="value: surname, uniqueName: true"/></td>
-      <td><input class="required number" data-bind="value: phone"/></td>
-      <td><a href="#" data-bind="click: $root.removeGift.bind($root)">Delete</a></td>
+      <td><span data-bind="text: name"></span></td>
+      <td><span data-bind="text: surname"></span></td>
+      <td><span data-bind="text: email"></span></td>
+      <td><span data-bind="text: phone"></span></td>
+      <td><a href="#"
+             data-bind="click: $root.editRecord.bind($root, $index())"
+             data-toggle="modal"
+             data-target="#myModal"><i class="fa fa-pencil"></i></a></td>
+      <td><a href="#" data-bind="click: $root.removeRecord.bind($root)"><i class="fa fa-close"></i></a></td>
     </tr>
     </tbody>
   </table>
 
-  <button data-bind="click: addRecord" class="btn btn-default">+Add</button>
-  <button data-bind="click: save" class="btn btn-primary" type="submit">Save</button>
-</div>
+  <button data-toggle="modal"
+          data-target="#myModal"
+          class="btn btn-default"
+          data-bind="click: $root.editRecord.bind($root)">
+    +Add
+  </button>
 
+</div>
 <br>
 
 <div class="container">
-  <h2>Modal Example</h2>
-
-  <!-- Trigger the modal with a button -->
-  <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Open Modal</button>
-
-  <!-- Modal -->
   <div class="modal fade" id="myModal" role="dialog">
     <div class="modal-dialog">
-
-      <!-- Modal content-->
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title">Modal Header</h4>
+          <h4 data-bind="visible: editingStatus()" class="modal-title">Edit record</h4>
+          <h4 data-bind="visible: !editingStatus()" class="modal-title">Add new record</h4>
         </div>
         <div class="modal-body">
-          <p>Some text in the modal.</p>
+
+          <form id="myForm">
+
+            <div class="container">
+              <fieldset>
+                <div class="row">
+                  <input data-bind="value: editedRecord.name" required="required"/>
+                  <label>Name</label>
+                </div>
+                <div class="row">
+                  <input data-bind="value: editedRecord.surname" required="required"/>
+                  <label>Surname</label>
+                </div>
+                <div class="row">
+                  <input data-bind="value: editedRecord.email" required="required" pattern="@"/>
+                  <label>Email</label>
+                </div>
+                <div class="row">
+                  <input data-bind="value: editedRecord.phone" required="required"/>
+                  <label>Phone</label>
+                </div>
+              </fieldset>
+            </div>
+
+            <br>
+
+            <div class="modal-footer">
+              <button data-bind="click: saveEdit"
+                      class="btn btn-success"
+                      type="submit"
+                      data-dismiss="modal">
+                save
+              </button>
+
+              <button type="button"
+                      class="btn btn-danger"
+                      data-dismiss="modal">
+                cancel
+              </button>
+            </div>
+
+          </form>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
+
+
       </div>
 
     </div>
   </div>
 </div>
 
-
-  <script src="../built/bundle.js"></script>
+<script src="../built/bundle.js"></script>
 </body>
 </html>
