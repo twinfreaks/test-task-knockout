@@ -1,8 +1,8 @@
 import * as ko from 'knockout';
 import * as $ from 'jquery';
-import data from './grid';
-import {IData} from './grid';
+import {IData} from './http-service';
 import * as validation from 'knockout.validation';
+import HttpService from './http-service';
 
 validation.init({
   registerExtenders:    true,
@@ -16,14 +16,42 @@ class ViewModel {
   records: any;
   editedRecord: any;
   editingStatus: any;
-  // errors: any;
+  httpService: any;
   
-  constructor(data: Array<IData>) {
-    // this.errors = validation.group(this);
-    this.records = ko.observableArray(data);
+  constructor() {
+    this.records = ko.observableArray([]);
     this.editedRecord = this.createEmpty();
     this.editingStatus = ko.observable(false);
+    this.httpService = new HttpService;
+    this.getRecordsList();
   }
+  
+  getRecordsList() {
+    this.httpService.getRecords()
+        .then(function (response) {
+          return response;
+        })
+        .catch(function (err) {
+          console.error('error!', err.statusText);
+        })
+        .then((response) => {
+          this.records(response);
+        });
+  };
+  
+  postRecords(records) {
+    this.httpService.postRecords(records)
+        .then(function (response) {
+          return response;
+        })
+        .catch(function (err) {
+          console.error('error!', err.statusText);
+        })
+        .then((response) => {
+          console.log(response);
+          this.records(response);
+        });
+  };
   
   editRecord = (index: any, record: any) => {
     const edited = this.editedRecord;
@@ -49,8 +77,6 @@ class ViewModel {
   };
   
   saveEdit = () => {
-    // console.log('this.errors().length', this.editedRecord.isValid());
-    
     const record = this.editedRecord;
     const index = this.editedRecord.index;
     
@@ -59,7 +85,7 @@ class ViewModel {
     const edited = {
       'name':    record.name(),
       'surname': record.surname(),
-      'email': record.email(),
+      'email':   record.email(),
       'phone':   record.phone()
     };
     
@@ -71,7 +97,7 @@ class ViewModel {
       this.records.push({
         name:    record.name(),
         surname: record.surname(),
-        email: record.email(),
+        email:   record.email(),
         phone:   record.phone()
       });
       
@@ -80,11 +106,15 @@ class ViewModel {
       record.email('');
       record.phone('');
     }
+    
+    this.postRecords(this.records());
+    
   };
   
   removeRecord = (record: any) => {
     if (!confirm('Are you sure?')) return;
     this.records.remove(record);
+    this.postRecords(this.records());
   };
   
   save(form): void {
@@ -103,6 +133,6 @@ class ViewModel {
   }
 }
 
-const vm = new ViewModel(data);
+const vm = new ViewModel();
 
 ko.applyBindings(vm);
